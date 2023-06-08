@@ -3,6 +3,7 @@ import vectorJson from "./productEmbeddings.json";
 import {
   ConsistencyLevelEnum,
   DataType,
+  MetricType,
   MilvusClient,
 } from "@zilliz/milvus2-sdk-node";
 dotenv.config();
@@ -17,7 +18,8 @@ const client = new MilvusClient({
   const promises = vectorJson.map(async (vector, index) => {
     const search = {
       collection_name: "catalog_upc_crops_2023_04_29",
-      vectors: [vector],
+      topk: 10,
+      vector,
       output_fields: [
         "id",
         "mb_image_id",
@@ -34,13 +36,13 @@ const client = new MilvusClient({
         "image_height",
       ],
       consistency_level: ConsistencyLevelEnum.Bounded,
-      vector_type: DataType.FloatVector,
+      metric_type: MetricType.IP,
     };
 
     const startDate = Date.now();
-    const results = (await client.search(search)).results;
+    const results = await client.search(search);
 
-    console.log(results.length);
+    console.log(results.results.length);
 
     return Date.now() - startDate;
   });
