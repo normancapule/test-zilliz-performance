@@ -38,7 +38,9 @@ const client = new MilvusClient({
     };
 
     const startDate = Date.now();
-    await client.search(search);
+    const results = (await client.search(search)).results;
+
+    console.log(results.length);
 
     return Date.now() - startDate;
   });
