@@ -2,19 +2,19 @@ import * as dotenv from "dotenv";
 import vectorJson from "./productEmbeddings.json";
 import {
   ConsistencyLevelEnum,
-  DataType,
   MetricType,
   MilvusClient,
 } from "@zilliz/milvus2-sdk-node";
-dotenv.config();
-const client = new MilvusClient({
-  address: process.env.MILVUS_URL,
-  ssl: true,
-  username: process.env.MILVUS_USERNAME,
-  password: process.env.MILVUS_PASSWORD,
-});
+import "dotenv/config";
 
 (async () => {
+  const client = new MilvusClient({
+    address: process.env.MILVUS_URL,
+    ssl: true,
+    username: process.env.MILVUS_USERNAME,
+    password: process.env.MILVUS_PASSWORD,
+  });
+
   const promises = vectorJson.map(async (vector, index) => {
     const search = {
       collection_name: "catalog_upc_crops_2023_04_29",
@@ -35,14 +35,15 @@ const client = new MilvusClient({
         "image_width",
         "image_height",
       ],
-      consistency_level: ConsistencyLevelEnum.Bounded,
       metric_type: MetricType.IP,
     };
 
     const startDate = Date.now();
     const results = await client.search(search);
 
-    console.log(results.results.length);
+    if (results.results.length === 0) {
+      throw new Error("No results found");
+    }
 
     return Date.now() - startDate;
   });
