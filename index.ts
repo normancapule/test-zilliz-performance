@@ -15,7 +15,9 @@ import "dotenv/config";
     password: process.env.MILVUS_PASSWORD,
   });
 
-  const promises = vectorJson.map(async (vector, index) => {
+  const latencyArray: any[] = [];
+
+  for (const vector of vectorJson) {
     const search = {
       collection_name: "catalog_upc_crops_2023_04_29",
       topk: 10,
@@ -45,7 +47,8 @@ import "dotenv/config";
       throw new Error("No results found");
     }
 
-    return Date.now() - startDate;
-  });
-  console.log((await Promise.all(promises)).sort((a, b) => b - a));
+    latencyArray.push(Date.now() - startDate);
+  }
+
+  console.log(latencyArray);
 })();
