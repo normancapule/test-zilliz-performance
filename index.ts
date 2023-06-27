@@ -1,10 +1,7 @@
 import * as dotenv from "dotenv";
+import { batchCallPromises } from "./batchCallPromises";
 import vectorJson from "./productEmbeddings.json";
-import {
-  ConsistencyLevelEnum,
-  MetricType,
-  MilvusClient,
-} from "@zilliz/milvus2-sdk-node";
+import { MetricType, MilvusClient } from "@zilliz/milvus2-sdk-node";
 import "dotenv/config";
 
 (async () => {
@@ -15,9 +12,7 @@ import "dotenv/config";
     password: process.env.MILVUS_PASSWORD,
   });
 
-  const latencyArray: any[] = [];
-
-  for (const vector of vectorJson) {
+  const iter = async (vector: any) => {
     const search = {
       collection_name: "catalog_upc_crops_2023_04_29",
       topk: 10,
@@ -47,8 +42,9 @@ import "dotenv/config";
       throw new Error("No results found");
     }
 
-    latencyArray.push(Date.now() - startDate);
-  }
+    return Date.now() - startDate;
+  };
 
-  console.log(latencyArray);
+  const results = await batchCallPromises(vectorJson, iter);
+  console.log(results);
 })();
