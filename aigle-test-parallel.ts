@@ -1,9 +1,7 @@
-import * as dotenv from "dotenv";
+import "dotenv/config";
 import Aigle from "aigle";
 import vectorJson from "./productEmbeddings.json";
-import async from "neo-async";
 import { MetricType, MilvusClient } from "@zilliz/milvus2-sdk-node";
-import "dotenv/config";
 
 (async () => {
   const client = new MilvusClient({

@@ -1,8 +1,7 @@
-import * as dotenv from "dotenv";
+import "dotenv/config";
 import { batchCallPromises } from "./batchCallPromises";
 import vectorJson from "./productEmbeddings.json";
 import { MetricType, MilvusClient } from "@zilliz/milvus2-sdk-node";
-import "dotenv/config";
 
 (async () => {
   const client = new MilvusClient({
