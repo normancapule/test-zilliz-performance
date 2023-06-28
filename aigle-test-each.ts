@@ -13,6 +13,8 @@ import "dotenv/config";
     password: process.env.MILVUS_PASSWORD,
   });
 
+  const mainResults: any[] = []
+
   const iter = async (vector: any) => {
     const search = {
       collection_name: "catalog_upc_crops_2023_04_29",
@@ -43,12 +45,12 @@ import "dotenv/config";
       throw new Error("No results found");
     }
 
+    mainResults.push(Date.now() - startDate)
     return Date.now() - startDate;
   };
 
-  const promises = vectorJson.map((vector) => iter(vector));
-
-  const results = await Aigle.resolve(promises).parallelLimit(1);
-  console.log(results);
-  console.log("Average", results.reduce((a, b) => a + b, 0) / results.length);
+  const startDate = Date.now();
+  await Aigle.resolve(vectorJson).each(iter)
+  console.log("Total ", Date.now() - startDate)
+  console.log("Average", mainResults.reduce((a, b) => a + b, 0) / mainResults.length);
 })();

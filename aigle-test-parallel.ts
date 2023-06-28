@@ -1,6 +1,7 @@
 import * as dotenv from "dotenv";
-import { batchCallPromises } from "./batchCallPromises";
+import Aigle from "aigle";
 import vectorJson from "./productEmbeddings.json";
+import async from "neo-async";
 import { MetricType, MilvusClient } from "@zilliz/milvus2-sdk-node";
 import "dotenv/config";
 
@@ -46,7 +47,8 @@ import "dotenv/config";
   };
 
   const startDate = Date.now();
-  const results = await batchCallPromises(vectorJson, iter);
+  const promises = vectorJson.map((v) => iter(v))
+  const results = await Aigle.resolve(promises).parallel()
   console.log("Total ", Date.now() - startDate)
   console.log("Average", results.reduce((a, b) => a + b, 0) / results.length);
 })();
