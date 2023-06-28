@@ -1,7 +1,9 @@
 import "dotenv/config";
-import Aigle from "aigle";
+import { Aigle } from "aigle";
 import vectorJson from "./productEmbeddings.json";
 import { MetricType, MilvusClient } from "@zilliz/milvus2-sdk-node";
+
+global.Promise = Aigle as unknown as any
 
 (async () => {
   const client = new MilvusClient({
